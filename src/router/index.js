@@ -1,25 +1,50 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from "vue-router";
+
+import { AuthStore } from "../stores/AuthStore";
+
+const middleware = (to, from, next) => {
+  const auth = AuthStore();
+  if (!auth.status) {
+    if (to.name == "login" || to.name == "register") return next();
+
+    return next("/login");
+  } else {
+    if (to.name == "login" || to.name == "register") return next("/");
+
+    return next();
+  }
+};
+
+const load = (component) => () => import(`../views/${component}`);
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
+    path: "/",
+    name: "home",
+    component: load("HomeView"),
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
-]
+    path: "/login",
+    name: "login",
+    component: load("LoginView"),
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: load("RegisterView.vue"),
+  },
+  {
+    path: "/todo",
+    name: "todo",
+    component: load("TodoView.vue"),
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-export default router
+router.beforeEach(middleware);
+
+export default router;
