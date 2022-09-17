@@ -6,13 +6,9 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import "./assets/icons/css/materialdesignicons.min.css";
 import mainNav from "./components/mainNav.vue";
-
-export default {
-  components: { mainNav },
-};
 </script>
 
 <style>
