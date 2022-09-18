@@ -27,5 +27,5 @@ or
 yarn build
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### API link
+https://github.com/salaheldeen911/laravel-api-for-vue-todo-list
