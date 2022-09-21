@@ -34,7 +34,7 @@ nav a.router-link-exact-active {
   display: none !important;
 }
 
-.clicked {
+.disabled {
   pointer-events: none;
   cursor: default;
 }

@@ -3,7 +3,9 @@
     <preLoader v-if="loading" ref="preLoader" />
 
     <div ref="todoContainer" class="todo-container" v-if="data.length">
-      <span v-if="!noData" @click="deleteAll" id="deleteAll">Delete All</span>
+      <span v-if="!noData" @click="deleteAll" ref="deleteAll" id="deleteAll"
+        >Delete All</span
+      >
 
       <div v-for="(todo, index) in data" :key="todo.id">
         <div :class="oddOrEven(index)" class="todo">
@@ -24,6 +26,11 @@
             <span
               @click="deleteTodo(todo.id)"
               class="mdi mdi-delete delete"
+              :ref="
+                (el) => {
+                  deleteBtns[todo.id] = el;
+                }
+              "
             ></span>
             <span @click="edit(todo.id)" class="mdi mdi-table-edit edit"></span>
           </div>
@@ -38,11 +45,17 @@
                 inputs[todo.id] = el;
               }
             "
+            @keypress.enter="enterUpdate(todo.id)"
           >
           </textarea>
           <div class="todoIcons" :class="oddOrEven(index)">
             <span
               @click="updateTodo(todo.id)"
+              :ref="
+                (el) => {
+                  updateBtns[todo.id] = el;
+                }
+              "
               class="mdi mdi-arrow-up-bold save"
             ></span>
             <span
@@ -87,6 +100,8 @@ export default {
       todos: [],
       dates: [],
       data: [],
+      updateBtns: [],
+      deleteBtns: [],
       scrollable: false,
       noData: false,
       scroll: true,
@@ -95,13 +110,8 @@ export default {
   },
 
   async mounted() {
-    try {
-      let res = await axios.get("todos");
-      this.data = res.data.data;
-      this.loading = false;
-    } catch (error) {
-      console.log(error);
-    }
+    await this.getData();
+    this.loading = false;
   },
 
   updated() {
@@ -124,6 +134,7 @@ export default {
   watch: {
     data(newVal) {
       newVal.length ? (this.noData = false) : (this.noData = true);
+      this.loading = false;
     },
   },
 
@@ -134,6 +145,18 @@ export default {
       }
 
       return "ood";
+    },
+
+    disable(btn) {
+      btn.classList.add("disabled");
+    },
+
+    enable(btn) {
+      btn.classList.remove("disabled");
+    },
+
+    enterUpdate(todo) {
+      this.updateBtns[todo].click();
     },
 
     edit(todo) {
@@ -166,6 +189,39 @@ export default {
       this.$refs.todoContainer.scrollTop = 0;
     },
 
+    validate(body) {
+      // to prevent html tags
+      const htmlPreventer = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g;
+      if (htmlPreventer.test(body)) return false;
+
+      // to accept all chars, nums, spaces, new lines and prevent less than 3 chars, over 255 chars.
+      const pattern = /^([a-zA-Z0-9_ \s\S-]){3,255}$/;
+      return pattern.test(body);
+    },
+
+    async getData() {
+      try {
+        let res = await axios.get("todos");
+        this.data = res.data.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    async addTodo(body) {
+      if (!this.validate(body)) {
+        return false;
+      }
+      try {
+        await axios.post("todos", { body: body });
+        this.getData();
+        this.scroll = true;
+        if (this.$refs.deleteAll) this.enable(this.$refs.deleteAll);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     async done(todo, event) {
       try {
         await axios.post(`todos/done/${todo}`);
@@ -176,40 +232,45 @@ export default {
     },
 
     async updateTodo(todo) {
+      this.disable(this.updateBtns[todo]);
+      this.inputs[todo].blur();
+
+      if (!this.validate(this.inputs[todo].value)) {
+        this.cancel(todo);
+        this.enable(this.updateBtns[todo]);
+
+        return false;
+      }
       try {
         let res = await axios.put(`todos/${todo}`, {
           body: this.inputs[todo].value,
         });
         this.update(todo, res.data.data);
         this.cancel(todo);
+        this.enable(this.updateBtns[todo]);
       } catch (error) {
+        this.enable(this.updateBtns[todo]);
+
         console.log(error);
       }
     },
 
     async deleteTodo(todo) {
+      this.disable(this.deleteBtns[todo]);
       try {
-        let res = await axios.delete(`todos/${todo}`);
-        this.data = res.data.data;
+        await axios.delete(`todos/${todo}`);
+        this.getData();
         this.scroll = false;
       } catch (error) {
         console.log(error);
       }
     },
 
-    async addTodo(body) {
-      try {
-        let res = await axios.post("todos", { body: body });
-        this.data = res.data.data;
-        this.scroll = true;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
     async deleteAll() {
-      let res = await axios.post("todos/delete-all");
-      this.data = res.data.data;
+      this.loading = true;
+      this.disable(this.$refs.deleteAll);
+      await axios.post("todos/delete-all");
+      this.getData();
       this.scrollable = false;
     },
   },

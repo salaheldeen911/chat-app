@@ -6,7 +6,7 @@
     <a
       v-if="auth.status"
       href=" javascript:void(0)"
-      :class="{ clicked: clicked }"
+      :class="{ disabled: clicked }"
       @click="logout"
       class="m-1"
       >Logout</a
