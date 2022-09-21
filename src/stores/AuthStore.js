@@ -14,7 +14,6 @@ export const AuthStore = defineStore("auth", {
       this.encryptedToken = this.crypt("hell", token);
       this.status = true;
     },
-
     crypt(salt, text) {
       const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
       const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2);
@@ -28,7 +27,6 @@ export const AuthStore = defineStore("auth", {
         .map(byteHex)
         .join("");
     },
-
     decrypt(salt, encoded) {
       const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
       const applySaltToChar = (code) =>
@@ -40,13 +38,10 @@ export const AuthStore = defineStore("auth", {
         .map((charCode) => String.fromCharCode(charCode))
         .join("");
     },
-  },
-  getters: {
-    token(state) {
-      if (state.encryptedToken) this.decrypt("hell", state.encryptedToken);
+    token() {
+      if (this.encryptedToken) return this.decrypt("hell", this.encryptedToken);
     },
   },
-
   persist: {
     strategies: [
       {

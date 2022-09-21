@@ -32,7 +32,7 @@ export default {
   mounted() {
     axios.defaults.headers.common[
       "Authorization"
-    ] = `Bearer ${this.auth.token}`;
+    ] = `Bearer ${this.auth.token()}`;
   },
   data() {
     return {
