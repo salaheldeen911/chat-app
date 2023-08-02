@@ -2,7 +2,11 @@
   <div id="todoMain">
     <preLoader v-if="loading" ref="preLoader" />
 
-    <div ref="todoContainer" class="todo-container" v-if="data.length">
+    <div
+      ref="todoContainer"
+      class="todo-container text-center"
+      v-if="data.length"
+    >
       <span v-if="!noData" @click="deleteAll" ref="deleteAll" id="deleteAll"
         >Delete All</span
       >
@@ -90,7 +94,7 @@
 
 <script>
 import axios from "axios";
-import preLoader from "./preLoader.vue";
+import preLoader from "../preLoader.vue";
 
 export default {
   components: { preLoader },
@@ -224,8 +228,11 @@ export default {
 
     async done(todo, event) {
       try {
-        await axios.post(`todos/done/${todo}`);
-        event.target.classList.toggle("done");
+        axios.post(`todos/done/${todo}`).then((res) => {
+          if (res.status) {
+            event.target.classList.toggle("done");
+          }
+        });
       } catch (error) {
         console.log(error);
       }

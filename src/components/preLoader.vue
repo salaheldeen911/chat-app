@@ -59,5 +59,5 @@
 </template>
 
 <style lang="scss" scoped>
-@import "../../assets/sass/todo/preloader";
+@import "../assets/sass/preloader";
 </style>

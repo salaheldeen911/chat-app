@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-
+// import Echo from "laravel-echo";
 import { AuthStore } from "../stores/AuthStore";
 
 const middleware = (to, from, next) => {
@@ -10,6 +10,7 @@ const middleware = (to, from, next) => {
     return next("/login");
   } else {
     if (to.name == "login" || to.name == "register") return next("/");
+    // checkEcho();
 
     return next();
   }
@@ -22,6 +23,16 @@ const routes = [
     path: "/",
     name: "home",
     component: load("HomeView"),
+  },
+  // {
+  //   path: "/test",
+  //   name: "test",
+  //   component: load("test"),
+  // },
+  {
+    path: "/chat",
+    name: "chat",
+    component: load("ChatView"),
   },
   {
     path: "/login",

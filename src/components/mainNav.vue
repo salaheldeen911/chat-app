@@ -2,7 +2,8 @@
   <nav>
     <router-link v-if="auth.status" class="m-1" to="/">Home</router-link>
     <router-link v-if="auth.status" class="m-1" to="/todo">Todos</router-link>
-
+    <!-- <router-link v-if="auth.status" class="m-1" to="/test">test</router-link> -->
+    <router-link v-if="auth.status" class="m-1" to="/chat">Chat</router-link>
     <a
       v-if="auth.status"
       href=" javascript:void(0)"
@@ -11,6 +12,7 @@
       class="m-1"
       >Logout</a
     >
+
     <router-link v-if="!auth.status" class="m-1" :to="{ name: 'login' }"
       >Login</router-link
     >
@@ -30,9 +32,7 @@ export default {
     return { auth };
   },
   mounted() {
-    axios.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${this.auth.token()}`;
+    axios.defaults.headers.common["Authorization"] = this.auth.token(); // `Bearer ${this.auth.token()}`;
   },
   data() {
     return {
@@ -43,8 +43,7 @@ export default {
     async logout() {
       this.clicked = true;
       try {
-        let response = await axios.post("logout");
-        console.log(response.data);
+        axios.post("logout");
         this.auth.$reset();
         this.$router.push({ path: "/login", replace: true });
         this.clicked = false;

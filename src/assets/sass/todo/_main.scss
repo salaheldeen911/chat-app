@@ -40,6 +40,10 @@
         align-items: end;
       }
 
+      &.none {
+        display: none;
+      }
+
       .todoBody,
       .todoInput {
         margin: 10px 0 0 0;

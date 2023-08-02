@@ -1,7 +1,7 @@
 <template>
   <div id="mainContainer">
     <div id="todoContainer">
-      <TodoHeader />
+      <Header />
       <TodoMain ref="todoMain" />
       <Add @addTodo="onAddTodo" />
     </div>
@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import TodoHeader from "../components/todo/TodoHeader.vue";
+import Header from "../components/todo/Header.vue";
 import TodoMain from "../components/todo/TodoMain.vue";
 import Add from "../components/todo/Add.vue";
 import { ref } from "vue";

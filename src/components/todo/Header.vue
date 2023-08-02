@@ -1,5 +1,5 @@
 <template>
-  <h2>MY TODO LIST</h2>
+  <h2 class="text-center">MY TODO LIST</h2>
 </template>
 
 <style scoped lang="scss">

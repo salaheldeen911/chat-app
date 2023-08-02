@@ -6,6 +6,7 @@ export const AuthStore = defineStore("auth", {
       user: null,
       encryptedToken: "",
       status: false,
+      devToken: "",
     };
   },
   actions: {
@@ -13,6 +14,7 @@ export const AuthStore = defineStore("auth", {
       this.user = user;
       this.encryptedToken = this.crypt("hell", token);
       this.status = true;
+      this.devToken = token;
     },
     crypt(salt, text) {
       const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
@@ -39,7 +41,8 @@ export const AuthStore = defineStore("auth", {
         .join("");
     },
     token() {
-      if (this.encryptedToken) return this.decrypt("hell", this.encryptedToken);
+      if (this.encryptedToken)
+        return "Bearer " + this.decrypt("hell", this.encryptedToken);
     },
   },
   persist: {
@@ -47,7 +50,7 @@ export const AuthStore = defineStore("auth", {
       {
         key: "user",
         storage: localStorage,
-        paths: ["status", "encryptedToken", "user"],
+        paths: ["status", "encryptedToken", "user", "devToken"],
       },
     ],
     enabled: true,
